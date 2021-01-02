@@ -127,9 +127,17 @@ func (w *Widget) Spawn() error {
 			continue
 		}
 
-		if v, ok := w.Handlers[reaction.Emoji.Name]; ok {
+		v, ok := w.Handlers[reaction.Emoji.Name]
+		if ok {
 			if w.isUserAllowed(reaction.UserID) {
 				go v(w, reaction)
+			}
+		} else { //try reaction ID
+			v, ok = w.Handlers[reaction.Emoji.ID]
+			if ok {
+				if w.isUserAllowed(reaction.UserID) {
+					go v(w, reaction)
+				}
 			}
 		}
 
