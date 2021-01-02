@@ -2,6 +2,7 @@ package dgwidgets
 
 import (
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
@@ -157,9 +158,14 @@ func (w *Widget) Spawn() error {
 //    handler  : handler function to call when the emoji is clicked
 //               func(*Widget, *discordgo.MessageReaction)
 func (w *Widget) Handle(emojiName string, handler WidgetHandler) error {
-	if _, ok := w.Handlers[emojiName]; !ok {
+	emojiId := emojiName
+	if len(emojiName) > 4 && strings.Contains(emojiName, ":") {
+		emojiId = strings.Split(emojiName, ":")[1]
+	}
+
+	if _, ok := w.Handlers[emojiId]; !ok {
 		w.Keys = append(w.Keys, emojiName)
-		w.Handlers[emojiName] = handler
+		w.Handlers[emojiId] = handler
 	}
 	// if the widget is running, append the added emoji to the message.
 	if w.Running() && w.Message != nil {
